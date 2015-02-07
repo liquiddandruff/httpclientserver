@@ -26,7 +26,7 @@ clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((server_host, server_port))
 clientSocket.send(formRequest(request_type, file_name))
 
-print("Request sent. Waiting for response from server...")
+print("Request sent. Waiting for response...")
 
 try:
     t1 = time.clock()
@@ -34,7 +34,7 @@ try:
     rcvBuffer = ""
     rcvdResponse = False
     httpHeadersParsed = False
-    headers = []
+    httpHeaders = ""
     while True:
         if (not rcvdResponse and time.clock() - t1 > SECONDS_TO_WAIT):
             print("Timed out, exiting..")
@@ -43,36 +43,40 @@ try:
         if not response:
             continue
         rcvdResponse = True
-        print("\n:RECV RESPONSE\n" + response + "\n:END RESPONSE\n")
+        print("\n:RECV RESPONSE\n" + repr(response) + "\n:END RESPONSE\n")
 
         try:
             rcvBuffer += response;
             lastBreak = rcvBuffer.rfind('\r\n')
             if not httpHeadersParsed and lastBreak != -1:
-                for line in rcvBuffer[:lastBreak].split('\r\n'):
-                    if line == '\r\n' and headers.index([len(headers)]) == '\r\n':
+                for line in rcvBuffer[:lastBreak + 2].splitlines(True):
+                    if line == '\r\n' and httpHeaders[-2:] == '\r\n':
                         httpHeadersParsed = True
-                    headers.append(line)
-                print("buffer: " +rcvBuffer + "\nheaders: " +str(headers))
+                    httpHeaders += line
                 rcvBuffer = rcvBuffer[2 + lastBreak:]
-            responseCode = headers[0].split()[1]
-            print("response: " + responseCode)
+            print("buffer: " + repr(rcvBuffer) + "\nheaders: " + repr(httpHeaders))
+            print("httpHeadersParsed: " + str(httpHeadersParsed))
         except IndexError:
             continue
 
         if not httpHeadersParsed:
             continue
 
-        print("Headerse parsed")
+        responseCode = httpHeaders.split()[1]
+
+        print("Headers parsed")
         if responseCode == '200':
             if request_type == 'GET':
-                binaryFile = open(os.path.join(SCRIPT_LOCATION, "DL_" + file_name), 'wb')
+                print("File downloaded")
+                with open(os.path.join(SCRIPT_LOCATION, "DL_" + file_name), 'wb') as binaryFile:
+                    binaryFile.write(rcvBuffer.encode('utf-8'))
             elif request_type == 'HEAD':
                 print("Received TRUE")
         elif responseCode == '404':
             print("Received 404")
-
-
+        print(rcvBuffer)
+        print("execution time: " + str(time.clock() - t1))
+        break
 except KeyboardInterrupt:
     print("\n^C Detected: Terminating gracefully")
 finally:
