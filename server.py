@@ -59,7 +59,6 @@ try:
         request = connectionSocket.recv(1024).decode('utf-8')
         if not request:
             continue
-        print("\n:RECV REQUEST\n" + request + "\n:END REQUEST\n")
 
         # Get the request type and file
         try:
