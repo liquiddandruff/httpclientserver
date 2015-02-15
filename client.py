@@ -31,6 +31,7 @@ def getHeaders():
         rcvBuffer += response;
         lastCRLFindex = rcvBuffer.rfind(CRLF)
         if lastCRLFindex != -1:
+            # We assume valid HTTP responses (2 CRLFs as header termination)
             for line in rcvBuffer[:lastCRLFindex + 2].splitlines(True):
                 httpHeaders += line
                 if line == CRLF and httpHeaders[-2:] == CRLF:

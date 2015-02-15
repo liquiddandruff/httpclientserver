@@ -1,0 +1,30 @@
+Steven Huang
+301223245
+sha152
+
+CMPT 371 Project 1
+
+I have ssh'd into SFU csil servers and have verified that
+python3 is installed, so I have decided to use python3 for
+my client and server. If for some reason your machine is 
+missing python3, change the shebangs in both files to 
+#!/usr/bin/env python2
+and remove the ConnectionRefusedError exception from the client
+
+I have included a test file "file" for you.
+
+0. Make server.py and client.py executable
+chmod +x server.py client.py
+
+1. Start the server in its own terminal
+./server.py
+
+2. Start the client in its own terminal as per requirements:
+./client.py localhost 12000 file GET
+./client.py localhost 12000 file HEAD
+./client.py localhost 12000 nonexisting GET
+./client.py localhost 12000 nonexisting HEAD
+
+3. Client will download files from the server into the same
+directory but with DL_ prepended to its file name
+
