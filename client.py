@@ -46,6 +46,8 @@ def getHeaders():
 # Listen for and only return content from server
 def getContent(rcvBuffer, cl):
     contentBuffer = rcvBuffer
+    if len(contentBuffer) >= cl:
+        return contentBuffer
     while True:
         content = clientSocket.recv(BYTES_TO_RECEIVE).decode('utf-8')
         if not content:
@@ -102,7 +104,10 @@ try:
         elif request_type == 'HEAD':
             print("Response code 200 (TRUE) received: " + repr(headers) + "\n")
     elif responseCode == '404':
-        print("Response code 404 received: " + repr(headers) + "\n")
+        if request_type == 'GET':
+            print("Response code 404 received: " + repr(headers + getContent(rcvBuffer, getContentLength(headers)) + "\n"))
+        elif request_type == 'HEAD':
+            print("Response code 404 received: " + repr(headers) + "\n")
 except timeout:
     print("\nTimed out. Exiting")
 except (ValueError, IndexError):
