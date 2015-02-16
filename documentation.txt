@@ -22,9 +22,8 @@ chmod +x server.py client.py
 2. Start the client in its own terminal as per requirements:
 ./client.py localhost 12000 file GET
 ./client.py localhost 12000 file HEAD
-./client.py localhost 12000 nonexisting GET
-./client.py localhost 12000 nonexisting HEAD
+./client.py localhost 12000 nonexistingfile GET
+./client.py localhost 12000 nonexistingfile HEAD
 
 3. Client will download files from the server into the same
 directory but with DL_ prepended to its file name
-
